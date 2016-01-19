@@ -18,10 +18,10 @@ class MockResponse:
 
 def mocked_requests_get(*args, **kwargs):
     """
-    Mock get request to return json from file with status 200.
+    Mock GET request to return json from file with status 200.
     Will return empty response with 404 if not found.
     """
-    response = get_response(args[0])
+    response = get_response('GET', args[0])
     if response:
         return MockResponse(response, 200)
     
@@ -29,10 +29,10 @@ def mocked_requests_get(*args, **kwargs):
 
 def mocked_requests_post(*args, **kwargs):
     """
-    Mock post request to return json from file with status 200.
+    Mock POST request to return json from file with status 200.
     Will return empty response with 404 if not found.
     """
-    response = get_response(args[0])
+    response = get_response('POST', args[0])
     if response:
         payload = json.loads(kwargs["data"])
         for k in payload:
@@ -41,10 +41,16 @@ def mocked_requests_post(*args, **kwargs):
 
     return MockResponse({}, 404)
 
-def get_response(url):
+def mocked_requests_delete(*args, **kwargs):
     """
-    load json responses from the filesystem based off url.
+    Mock DELETE request to return empty json with status 200.
+    """
+    return MockResponse({}, 200)
+
+def get_response(type, url):
+    """
+    load json responses from the filesystem based off url and type.
     """
     parsed_url = urlparse(url)
-    with open(os.path.normpath('tests/unittests/resources{0}.json'.format(parsed_url.path))) as json_file:
+    with open(os.path.normpath('tests/unittests/resources{0}.{1}.json'.format(parsed_url.path, type))) as json_file:
         return json.load(json_file)

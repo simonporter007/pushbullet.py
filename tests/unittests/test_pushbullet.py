@@ -1,20 +1,24 @@
 import mock
 from pushbullet import pushbullet
-from mock_response import mocked_requests_get, mocked_requests_post
+from mock_response import mocked_requests_get, mocked_requests_post, mocked_requests_delete
 
 class TestPushbullet(object):
     
     def setup_method(self, method):
-        self.patcher_get = mock.patch('pushbullet.pushbullet.requests.Session.get', side_effect=mocked_requests_get)
-        self.patcher_post = mock.patch('pushbullet.pushbullet.requests.Session.post', side_effect=mocked_requests_post)
-        self.mock_get = self.patcher_get.start()
-        self.mock_post = self.patcher_post.start()
+        self.patchers = []
+        patcher_get = mock.patch('pushbullet.pushbullet.requests.Session.get', side_effect=mocked_requests_get)
+        patcher_post = mock.patch('pushbullet.pushbullet.requests.Session.post', side_effect=mocked_requests_post)
+        patcher_delete = mock.patch('pushbullet.pushbullet.requests.Session.delete', side_effect=mocked_requests_delete)
+        self.patchers.extend([patcher_get, patcher_post, patcher_delete])
+        self.mock_get = patcher_get.start()
+        self.mock_post = patcher_post.start()
+        self.mocked_requests_delete = patcher_delete.start()
         self.pb = pushbullet.Pushbullet("API_KEY")
         self.device = self.pb.devices[0]
     
     def teardown_method(self, method):
-        self.patcher_get.stop()
-        self.patcher_post.stop()
+        for patcher in self.patchers:
+            patcher.stop()
         
     def test_edit_device_without_nickname(self):
         new_device = self.pb.edit_device(self.device)
