@@ -29,21 +29,3 @@ class TestPushbullet(object):
         new_device = self.pb.edit_device(self.device, nickname=nickname)
         assert new_device.nickname == nickname
         
-    def test_edit_device_without_model(self):
-        new_device = self.pb.edit_device(self.device)
-        assert new_device.model == self.device.model
-        
-    def test_edit_device_with_model(self):
-        model = "New Test Model"
-        new_device = self.pb.edit_device(self.device, model=model)
-        assert new_device.model == model
-        
-    def test_edit_device_without_manufacturer(self):
-        new_device = self.pb.edit_device(self.device)
-        assert new_device.model == self.device.model
-        
-    def test_edit_device_with_manufacturer(self):
-        manufacturer = "New Test manufacturer"
-        new_device = self.pb.edit_device(self.device, manufacturer=manufacturer)
-        assert new_device.manufacturer == manufacturer
-        
