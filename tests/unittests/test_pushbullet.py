@@ -1,4 +1,5 @@
 import mock
+import json
 from pushbullet import pushbullet
 from mock_response import mocked_requests_get, mocked_requests_post, mocked_requests_delete
 
@@ -20,29 +21,46 @@ class TestPushbullet(object):
         for patcher in self.patchers:
             patcher.stop()
 
+    def test_new_device_with_nickanme(self):
+        nickname = "New Dev Test Device"
+        new_device = self.pb.new_device(nickname)
+        assert self.mock_post.call_count == 1
+        assert new_device.nickname == nickname
+
+    def test_new_device_without_nickanme(self):
+        new_device = self.pb.new_device(None)
+        assert self.mock_post.call_count == 1
+        assert new_device.nickname == ""
+
     def test_edit_device_without_nickname(self):
         new_device = self.pb.edit_device(self.device)
+        assert self.mock_post.call_count == 1
         assert new_device.nickname == self.device.nickname
 
     def test_edit_device_with_nickname(self):
         nickname = "New Test Nickname"
         new_device = self.pb.edit_device(self.device, nickname=nickname)
+        assert self.mock_post.call_count == 1
         assert new_device.nickname == nickname
 
     def test_edit_device_without_model(self):
         new_device = self.pb.edit_device(self.device)
+        assert self.mock_post.call_count == 1
         assert new_device.model == self.device.model
 
     def test_edit_device_with_model(self):
         model = "New Test Model"
         new_device = self.pb.edit_device(self.device, model=model)
+        assert self.mock_post.call_count == 1
         assert new_device.model == model
 
     def test_edit_device_without_manufacturer(self):
         new_device = self.pb.edit_device(self.device)
+        assert self.mock_post.call_count == 1
         assert new_device.model == self.device.model
 
     def test_edit_device_with_manufacturer(self):
         manufacturer = "New Test manufacturer"
         new_device = self.pb.edit_device(self.device, manufacturer=manufacturer)
+        assert self.mock_post.call_count == 1
         assert new_device.manufacturer == manufacturer

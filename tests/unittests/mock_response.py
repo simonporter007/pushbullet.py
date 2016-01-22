@@ -52,5 +52,6 @@ def get_response(type, url):
     load json responses from the filesystem based off url and type.
     """
     parsed_url = urlparse(url)
-    with open(os.path.normpath('tests/unittests/resources{0}.{1}.json'.format(parsed_url.path, type))) as json_file:
+    path = os.path.abspath(os.path.dirname(__file__))
+    with open(os.path.normpath('{0}/resources{1}.{2}.json'.format(path, parsed_url.path, type))) as json_file:
         return json.load(json_file)
