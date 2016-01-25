@@ -40,13 +40,40 @@ class TestPushbullet(object):
         assert new_device.nickname is None
         assert repr(new_device) == "Device('nameless (iden: {})')".format(new_device.device_iden)
 
-    def test_new_device_with_generated_nickname(self):
+    def test_new_device_with_both_parts_of_generated_nickname(self):
         manufacturer = "Test Dev"
         model = "TEST ONE"
         new_device = self.pb.new_device(nickname=None, manufacturer=manufacturer, model=model)
         assert self.mock_post.call_count == 1
         assert new_device.generated_nickname is True
         assert new_device.nickname == "{0} {1}".format(manufacturer, model)
+
+    def test_new_device_with_model_part_of_generated_nickname(self):
+        model = "TEST ONE"
+        new_device = self.pb.new_device(nickname=None, model=model)
+        assert self.mock_post.call_count == 1
+        assert new_device.generated_nickname is True
+        assert new_device.nickname == model
+
+    def test_new_device_with_manufacturer_part_of_generated_nickname(self):
+        manufacturer = "Test Dev"
+        new_device = self.pb.new_device(nickname=None, manufacturer=manufacturer)
+        assert self.mock_post.call_count == 1
+        assert new_device.generated_nickname is True
+        assert new_device.nickname == manufacturer
+
+    def test_new_device_without_icon(self):
+        nickname = "New Dev Test Device"
+        new_device = self.pb.new_device(nickname)
+        assert self.mock_post.call_count == 1
+        assert new_device.icon == "system"
+
+    def test_new_device_with_icon(self):
+        nickname = "New Dev Test Device"
+        icon = "android"
+        new_device = self.pb.new_device(nickname, icon=icon)
+        assert self.mock_post.call_count == 1
+        assert new_device.icon == icon
 
     def test_edit_device_without_nickname(self):
         new_device = self.pb.edit_device(self.device)

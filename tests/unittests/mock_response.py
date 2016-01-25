@@ -34,12 +34,23 @@ def mocked_requests_post(*args, **kwargs):
     """
     response = get_response('POST', args[0])
     if response:
-        payload = json.loads(kwargs["data"])
+        payload = json.loads(kwargs['data'])
         for k in payload:
             if not payload[k] or payload[k] is None:
                 del response[k]
             else:
                 response[k] = payload[k]
+        if 'nickname' not in payload or payload['nickname'] is None:
+            if set(('model', 'manufacturer')) <= set(payload):
+                response['nickname'] = '{0} {1}'.format(payload['manufacturer'], payload['model'])
+                response['generated_nickname'] = True
+            elif 'model' in payload:
+                response['nickname'] = payload['model']
+                response['generated_nickname'] = True
+            elif 'manufacturer' in payload:
+                response['nickname'] = payload['manufacturer']
+                response['generated_nickname'] = True
+
         return MockResponse(response, 200)
 
     return MockResponse({}, 404)
