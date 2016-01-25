@@ -21,16 +21,32 @@ class TestPushbullet(object):
         for patcher in self.patchers:
             patcher.stop()
 
-    def test_new_device_with_nickanme(self):
+    def test_new_device_with_nickname(self):
         nickname = "New Dev Test Device"
         new_device = self.pb.new_device(nickname)
         assert self.mock_post.call_count == 1
         assert new_device.nickname == nickname
 
-    def test_new_device_without_nickanme(self):
+    def test_new_device_with_nickname_as_none(self):
         new_device = self.pb.new_device(None)
         assert self.mock_post.call_count == 1
-        assert new_device.nickname == ""
+        assert new_device.nickname is None
+        assert repr(new_device) == "Device('nameless (iden: {})')".format(new_device.device_iden)
+
+    def test_new_device_with_nickname_as_empty(self):
+        nickname = ""
+        new_device = self.pb.new_device(nickname)
+        assert self.mock_post.call_count == 1
+        assert new_device.nickname is None
+        assert repr(new_device) == "Device('nameless (iden: {})')".format(new_device.device_iden)
+
+    def test_new_device_with_generated_nickname(self):
+        manufacturer = "Test Dev"
+        model = "TEST ONE"
+        new_device = self.pb.new_device(nickname=None, manufacturer=manufacturer, model=model)
+        assert self.mock_post.call_count == 1
+        assert new_device.generated_nickname is True
+        assert new_device.nickname == "{0} {1}".format(manufacturer, model)
 
     def test_edit_device_without_nickname(self):
         new_device = self.pb.edit_device(self.device)

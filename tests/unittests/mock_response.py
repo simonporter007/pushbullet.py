@@ -36,7 +36,10 @@ def mocked_requests_post(*args, **kwargs):
     if response:
         payload = json.loads(kwargs["data"])
         for k in payload:
-            response[k] = payload[k]
+            if not payload[k] or payload[k] is None:
+                del response[k]
+            else:
+                response[k] = payload[k]
         return MockResponse(response, 200)
 
     return MockResponse({}, 404)
